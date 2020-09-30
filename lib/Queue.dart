@@ -142,9 +142,6 @@ class Queue<Item> implements Iterable<Item> {
   }
 
   @override
-  int get length => throw UnimplementedError();
-
-  @override
   Iterable<T> map<T>(T Function(Item e) f) {
     throw UnimplementedError();
   }
@@ -201,6 +198,9 @@ class Queue<Item> implements Iterable<Item> {
   Iterable<T> whereType<T>() {
     throw UnimplementedError();
   }
+
+  @override
+  int get length => n;
 
   @override
   bool get isEmpty => firstNode == null;
