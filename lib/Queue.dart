@@ -1,32 +1,33 @@
-import 'dart:collection';
-
-/**
- *  The {@code Queue} class represents a firstNode-in-firstNode-out (FIFO)
- *  queue of generic items.
- *  It supports the usual <em>enqueue</em> and <em>dequeue</em>
- *  operations, along with methods for peeking at the firstNode item,
- *  testing if the queue is empty, and iterating through
- *  the items in FIFO order.
- *  <p>
- *  This implementation uses a singly linked list with a static nested class for
- *  linked-list nodes. See {@link LinkedQueue} for the version from the
- *  textbook that uses a non-static nested class.
- *  See {@link ResizingArrayQueue} for a version that uses a resizing array.
- *  The <em>enqueue</em>, <em>dequeue</em>, <em>peek</em>, <em>size</em>, and <em>is-empty</em>
- *  operations all take constant time in the worst case.
- *  <p>
- *  For additional documentation, see <a href="https://algs4.cs.princeton.edu/13stacks">Section 1.3</a> of
- *  <i>Algorithms, 4th Edition</i> by Robert Sedgewick and Kevin Wayne.
- *
- *  @author Robert Sedgewick
- *  @author Kevin Wayne
- *
- *  @param <Item> the generic type of an item in this queue
- */
+///  The [Queue] class represents a firstNode-in-firstNode-out (FIFO)
+///  queue of generic items.
+///  It supports the usual **enqueue** and **dequeue**
+///  operations, along with methods for peeking at the firstNode item,
+///  testing if the queue is empty, and iterating through
+///  the items in FIFO order.
+///
+///  This implementation uses a singly linked list with a static nested class for
+///  linked-list nodes. See [LinkedQueue] for the version from the
+///  textbook that uses a non-static nested class.
+///  See [ResizingArrayQueue] for a version that uses a resizing array.
+///  The **enqueue**, **dequeue**, **peek**, **size**, and **is-empty**
+///  operations all take constant time in the worst case.
+///
+///  For additional documentation, see [Section 1.3](https://algs4.cs.princeton.edu/13stacks) of
+///  *Algorithms, 4th Edition* by Robert Sedgewick and Kevin Wayne.
+///
+///  @author Robert Sedgewick
+///  @author Kevin Wayne
+///
+///  [Item] the generic type of an item in this queue
 class Queue<Item> implements Iterable<Item> {
-  Node<Item> firstNode; // beginning of queue
-  Node<Item> lastNode; // end of queue
-  int n; // number of elements on queue
+  /// beginning of queue
+  Node<Item> firstNode;
+
+  /// end of queue
+  Node<Item> lastNode;
+
+  /// number of elements on queue
+  int n;
 
   /// Initializes an empty queue.
   Queue() {
@@ -36,53 +37,52 @@ class Queue<Item> implements Iterable<Item> {
   }
 
   /// Returns the number of items in this queue.
-  ///
-  /// @return the number of items in this queue
+
+  @Deprecated('Please use [Queue.length] getter')
   int size() {
     return n;
   }
 
   /// Returns the item least recently added to this queue.
   ///
-  /// @return the item least recently added to this queue
-  /// @throws NoSuchElementException if this queue is empty
+  /// Throws [StateError] if this queue is empty
   Item peek() {
     if (isEmpty) throw StateError('Queue underflow');
     return firstNode.item;
   }
 
-  /// Adds the item to this queue.
-  ///
-  /// @param  item the item to add
+  /// Adds the [item] to this queue.
   void enqueue(Item item) {
     var oldlastNode = lastNode;
+
     lastNode = Node<Item>();
     lastNode.item = item;
     lastNode.next = null;
+
     if (isEmpty) {
       firstNode = lastNode;
     } else {
       oldlastNode.next = lastNode;
     }
+
     n++;
   }
 
   /// Removes and returns the item on this queue that was least recently added.
-  ///
-  /// @return the item on this queue that was least recently added
-  /// @throws NoSuchElementException if this queue is empty
+  /// @throws StateError if this queue is empty
   Item dequeue() {
     if (isEmpty) throw StateError('Queue underflow');
     var item = firstNode.item;
+
     firstNode = firstNode.next;
     n--;
-    if (isEmpty) lastNode = null; // to avoid loitering
+
+    // to avoid loitering
+    if (isEmpty) lastNode = null;
     return item;
   }
 
-  /// Returns a string representation of this queue.
-  ///
-  /// @return the sequence of items in FIFO order, separated by spaces
+  /// Return the sequence of items in a string representation and FIFO order, separated by spaces
   @override
   String toString() {
     var s = <Object>[];
@@ -199,6 +199,7 @@ class Queue<Item> implements Iterable<Item> {
     throw UnimplementedError();
   }
 
+  /// Returns the number of items in this queue.
   @override
   int get length => n;
 
@@ -227,21 +228,20 @@ class Queue<Item> implements Iterable<Item> {
   @override
   Iterator<Item> get iterator => LinkedIterator(firstNode);
 
-  /// Unit tests the {@code Queue} data type.
-  ///
-  /// @param args the command-line arguments
-  // static void main(List<String> args) {
-  //   var queue = Queue<String>();
-  //   while (!StdIn.isEmpty()) {
-  //     String item = StdIn.readString();
-  //     if (item != '-') {
-  //       queue.enqueue(item);
-  //     } else if (queue.isNotEmpty) {
-  //       print(queue.dequeue() + ' ');
-  //     }
-  //   }
-  //   print('(' + queue.size().toString() + ' left on queue)');
-  // }
+  /// Method to perform some tests of [Queue] data type it receive the command-line [arguments]
+  static void main(List<String> arguments) {
+    var queue = Queue<String>();
+
+    arguments.asMap().forEach((i, item) {
+      if (item != '-') {
+        queue.enqueue(item);
+      } else if (queue.isNotEmpty) {
+        print('${queue.dequeue()} ');
+      }
+    });
+
+    print('(${queue.length.toString()} left on queue)');
+  }
 }
 
 class Node<Item> {

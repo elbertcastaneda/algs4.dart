@@ -235,10 +235,10 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
 
   /// Removes the smallest key and associated value from the symbol table.
   ///
-  /// @throws NoSuchElementException if the symbol table is empty
+  /// @throws StateError if the symbol table is empty
   void deleteMin() {
     if (isEmpty()) {
-      throw ArgumentError('called deleteMin() with empty symbol table');
+      throw StateError('called deleteMin() with empty symbol table');
     }
     root = _deleteMin(root);
     assert(check());
@@ -258,10 +258,10 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
 
   /// Removes the largest key and associated value from the symbol table.
   ///
-  /// @throws NoSuchElementException if the symbol table is empty
+  /// @throws StateError if the symbol table is empty
   void deleteMax() {
     if (isEmpty()) {
-      throw ArgumentError('called deleteMax() with empty symbol table');
+      throw StateError('called deleteMax() with empty symbol table');
     }
     root = _deleteMax(root);
     assert(check());
@@ -282,9 +282,9 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
   /// Returns the smallest key in the symbol table.
   ///
   /// @return the smallest key in the symbol table
-  /// @throws NoSuchElementException if the symbol table is empty
+  /// @throws StateError if the symbol table is empty
   Key min() {
-    if (isEmpty()) throw ArgumentError('called min() with empty symbol table');
+    if (isEmpty()) throw StateError('called min() with empty symbol table');
     return _min(root).key;
   }
 
@@ -300,9 +300,9 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
   /// Returns the largest key in the symbol table.
   ///
   /// @return the largest key in the symbol table
-  /// @throws NoSuchElementException if the symbol table is empty
+  /// @throws StateError if the symbol table is empty
   Key max() {
-    if (isEmpty()) throw ArgumentError('called max() with empty symbol table');
+    if (isEmpty()) throw StateError('called max() with empty symbol table');
     return _max(root).key;
   }
 
@@ -315,18 +315,13 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
     return _max(x.right);
   }
 
-  /// Returns the largest key in the symbol table less than or equal to
-  /// {@code key}.
+  /// Returns the largest key in the symbol table less than or equal to [key].
   ///
-  /// @param key the key
-  /// @return the largest key in the symbol table less than or equal to
-  ///         {@code key}
-  /// @throws NoSuchElementException if the symbol table is empty
-  /// @throws IllegalArgumentException if {@code key} is {@code null}
+  /// Throws `StateError` if the symbol table **is empty** or `ArgumentError` if [key] is `null`
   Key floor(Key key) {
     if (key == null) throw ArgumentError('argument to floor() is null');
     if (isEmpty()) {
-      throw ArgumentError('called floor() with empty symbol table');
+      throw StateError('called floor() with empty symbol table');
     }
     var x = _floor(root, key);
     if (x == null) {
@@ -362,11 +357,10 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
   /// @param key the key
   /// @return the smallest key in the symbol table greater than or equal to
   ///         {@code key}
-  /// @throws NoSuchElementException if the symbol table is empty
-  /// @throws IllegalArgumentException if {@code key} is {@code null}
+  /// Throws `StateError` if the symbol table **is empty** or `ArgumentError` if [key] is `null`
   Key ceiling(Key key) {
     if (key == null) ArgumentError('argument to ceiling() is null');
-    if (isEmpty()) ArgumentError('called ceiling() with empty symbol table');
+    if (isEmpty()) StateError('called ceiling() with empty symbol table');
     var x = _ceiling(root, key);
     if (x == null) {
       return null;
@@ -509,13 +503,7 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
     return queue;
   }
 
-  /// Adds the keys between [lo] and [hi] in the subtree
-  /// to the `queue`.
-  ///
-  /// [x] the subtree
-  /// [queue] the queue
-  /// [lo] the lowest key
-  /// [hi] the highest key
+  /// Adds the keys between [lo] and [hi] in the subtree to the `queue`.
   void _keysByRange(Node<Key, Value> x, Queue<Key> queue, Key lo, Key hi) {
     if (x == null) return;
     var cmplo = lo.compareTo(x.key);
@@ -525,12 +513,9 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
     if (cmphi > 0) _keysByRange(x.right, queue, lo, hi);
   }
 
-  /// Returns the number of keys in the symbol table in the given range.
+  /// Returns the number of keys in the symbol table
+  /// between [lo] (minimum endpoint) and [hi] (maximum endpoint).
   ///
-  /// [lo] minimum endpoint
-  /// [hi] maximum endpoint
-  ///
-  /// Returns the number of keys in the symbol table between `lo` (inclusive) and `hi` (exclusive)
   /// Throws ArgumentError if either [lo] or [hi] is `null`
   int sizeByKeys(Key lo, Key hi) {
     if (lo == null) throw ArgumentError('first argument to size() is null');
@@ -543,8 +528,6 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
     }
   }
 
-  /// Checks if the AVL tree invariants are fine.
-  ///
   /// Returns `true` if the AVL tree invariants are fine
   bool check() {
     if (!isBST()) print('Symmetric order not consistent');
@@ -554,39 +537,27 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
     return isBST() && isAVL() && isSizeConsistent() && isRankConsistent();
   }
 
-  /// Checks if AVL property is consistent.
-  ///
   /// Returns `true` if AVL property is consistent.
   bool isAVL() {
     return _isAVL(root);
   }
 
-  /// Checks if AVL property is consistent in the subtree.
-  ///
-  /// [x] the subtree
-  ///
-  /// Returns `true` if AVL property is consistent in the subtree
-  bool _isAVL(Node<Key, Value> x) {
-    if (x == null) return true;
-    var bf = _balanceFactor(x);
+  /// Returns `true` if AVL property is consistent in the [subtree]
+  bool _isAVL(Node<Key, Value> subtree) {
+    if (subtree == null) return true;
+    var bf = _balanceFactor(subtree);
     if (bf > 1 || bf < -1) return false;
-    return _isAVL(x.left) && _isAVL(x.right);
+    return _isAVL(subtree.left) && _isAVL(subtree.right);
   }
 
-  /// Checks if the symmetric order is consistent.
-  ///
   /// Returns `true` if the symmetric order is consistent
   bool isBST() {
     return _isBST(root, null, null);
   }
 
-  /// Checks if the tree rooted at x is a BST with all keys strictly between
-  /// min and max (if min or max is null, treat as empty constraint) Credit:
-  /// Bob Dondero's elegant solution
-  ///
-  /// [x] the subtree
-  /// [min] the minimum key in subtree
-  /// [max] the maximum key in subtree
+  /// Checks if the tree rooted at [x] is a BST with all keys strictly between
+  /// the minimum key ([min]) and the maximum key ([max]). if [min] or [max] is null, treat as
+  /// empty constraint (Credit: **Bob Dondero's** elegant solution).
   ///
   /// Returns `true` if the symmetric order is consistent
   bool _isBST(Node<Key, Value> x, Key min, Key max) {
