@@ -1,6 +1,7 @@
 import 'dart:core';
 import 'dart:math' as math;
-import 'Queue.dart';
+import 'queue.dart';
+import 'std_out.dart';
 
 class AVLTreeST<Key extends Comparable<Key>, Value> {
   /// The root node.
@@ -530,10 +531,10 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
 
   /// Returns `true` if the AVL tree invariants are fine
   bool check() {
-    if (!isBST()) print('Symmetric order not consistent');
-    if (!isAVL()) print('AVL property not consistent');
-    if (!isSizeConsistent()) print('Subtree counts not consistent');
-    if (!isRankConsistent()) print('Ranks not consistent');
+    if (!isBST()) stdOut.println('Symmetric order not consistent');
+    if (!isAVL()) stdOut.println('AVL property not consistent');
+    if (!isSizeConsistent()) stdOut.println('Subtree counts not consistent');
+    if (!isRankConsistent()) stdOut.println('Ranks not consistent');
     return isBST() && isAVL() && isSizeConsistent() && isRankConsistent();
   }
 
@@ -595,21 +596,6 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
     }
     return true;
   }
-
-  /// Unit tests the {`AVLTreeST`} data type.
-  ///
-  /// [arguments] the command-line arguments
-  static void main(List<String> arguments) {
-    var st = AVLTreeST<String, int>();
-    arguments.asMap().forEach((i, element) {
-      st.put(element, i);
-    });
-
-    for (var s in st.keys()) {
-      print('${s} a');
-    }
-    print('');
-  }
 }
 
 /// This class represents an inner node of the AVL tree.
@@ -627,6 +613,21 @@ class Node<Key, Value> {
     this.size = size;
     this.height = height;
   }
+}
+
+/// Unit tests the {`AVLTreeST`} data type.
+///
+/// [arguments] the command-line arguments
+void main(List<String> arguments) {
+  var st = AVLTreeST<String, int>();
+  arguments.asMap().forEach((i, element) {
+    st.put(element, i);
+  });
+
+  for (var s in st.keys()) {
+    stdOut.println('${s} a');
+  }
+  stdOut.println('');
 }
 
 /******************************************************************************

@@ -1,3 +1,5 @@
+import 'std_out.dart';
+
 ///  The [Queue] class represents a firstNode-in-firstNode-out (FIFO)
 ///  queue of generic items.
 ///  It supports the usual **enqueue** and **dequeue**
@@ -88,7 +90,6 @@ class Queue<Item> implements Iterable<Item> {
     var s = <Object>[];
     for (var item in this) {
       s.add(item);
-      s.add(' ');
     }
     return s.toString();
   }
@@ -134,16 +135,26 @@ class Queue<Item> implements Iterable<Item> {
   }
 
   @override
-  void forEach(void Function(Item element) f) {}
+  void forEach(void Function(Item element) fn) {
+    for (var item in this) {
+      fn(item);
+    }
+  }
 
   @override
-  String join([String separator = ""]) {
+  String join([String separator = '']) {
     throw UnimplementedError();
   }
 
   @override
-  Iterable<T> map<T>(T Function(Item e) f) {
-    throw UnimplementedError();
+  Iterable<T> map<T>(T Function(Item e) fn) {
+    final items= <T>[];
+
+    for (var item in this) {
+      items.add(fn(item));
+    }
+
+    return items;
   }
 
   @override
@@ -227,21 +238,6 @@ class Queue<Item> implements Iterable<Item> {
 
   @override
   Iterator<Item> get iterator => LinkedIterator(firstNode);
-
-  /// Method to perform some tests of [Queue] data type it receive the command-line [arguments]
-  static void main(List<String> arguments) {
-    var queue = Queue<String>();
-
-    arguments.asMap().forEach((i, item) {
-      if (item != '-') {
-        queue.enqueue(item);
-      } else if (queue.isNotEmpty) {
-        print('${queue.dequeue()} ');
-      }
-    });
-
-    print('(${queue.length.toString()} left on queue)');
-  }
 }
 
 class Node<Item> {
@@ -275,6 +271,22 @@ class LinkedIterator<Item> implements Iterator<Item> {
 
   @override
   Item get current => currentItem;
+}
+
+/// Method to perform some tests of [Queue] data type it receive the command-line [arguments]
+void main(List<String> arguments) {
+  var queue = Queue<String>();
+
+  arguments.asMap().forEach((i, item) {
+    if (item != '-') {
+      queue.enqueue(item);
+    } else if (queue.isNotEmpty) {
+      stdOut.println('${queue.dequeue()} ');
+    }
+  });
+
+  stdOut.println('(${queue.length.toString()} left on queue)');
+  stdOut.println('Queue: ${queue.toString()}');
 }
 
 /******************************************************************************
