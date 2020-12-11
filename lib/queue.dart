@@ -1,9 +1,9 @@
 import 'std_out.dart';
 
-///  The [Queue] class represents a firstNode-in-firstNode-out (FIFO)
+///  The [Queue] class represents a _firstNode-in-_firstNode-out (FIFO)
 ///  queue of generic items.
 ///  It supports the usual **enqueue** and **dequeue**
-///  operations, along with methods for peeking at the firstNode item,
+///  operations, along with methods for peeking at the _firstNode item,
 ///  testing if the queue is empty, and iterating through
 ///  the items in FIFO order.
 ///
@@ -23,20 +23,13 @@ import 'std_out.dart';
 ///  [Item] the generic type of an item in this queue
 class Queue<Item> implements Iterable<Item> {
   /// beginning of queue
-  Node<Item> firstNode;
+  Node<Item>? _firstNode;
 
   /// end of queue
-  Node<Item> lastNode;
+  Node<Item>? _lastNode;
 
   /// number of elements on queue
-  int n;
-
-  /// Initializes an empty queue.
-  Queue() {
-    firstNode = null;
-    lastNode = null;
-    n = 0;
-  }
+  int n = 0;
 
   /// Returns the number of items in this queue.
 
@@ -50,21 +43,20 @@ class Queue<Item> implements Iterable<Item> {
   /// Throws [StateError] if this queue is empty
   Item peek() {
     if (isEmpty) throw StateError('Queue underflow');
-    return firstNode.item;
+    return _firstNode!.item;
   }
 
   /// Adds the [item] to this queue.
   void enqueue(Item item) {
-    var oldlastNode = lastNode;
+    var oldLastNode = _lastNode;
 
-    lastNode = Node<Item>();
-    lastNode.item = item;
-    lastNode.next = null;
+    _lastNode = Node<Item>(item);
+    _lastNode!.next;
 
     if (isEmpty) {
-      firstNode = lastNode;
+      _firstNode = _lastNode;
     } else {
-      oldlastNode.next = lastNode;
+      oldLastNode!.next = _lastNode;
     }
 
     n++;
@@ -74,20 +66,20 @@ class Queue<Item> implements Iterable<Item> {
   /// @throws StateError if this queue is empty
   Item dequeue() {
     if (isEmpty) throw StateError('Queue underflow');
-    var item = firstNode.item;
+    var item = _firstNode!.item;
 
-    firstNode = firstNode.next;
+    _firstNode = _firstNode!.next;
     n--;
 
     // to avoid loitering
-    if (isEmpty) lastNode = null;
-    return item;
+    if (isEmpty) _lastNode = null;
+    return item!;
   }
 
   /// Return the sequence of items in a string representation and FIFO order, separated by spaces
   @override
   String toString() {
-    var s = <Object>[];
+    var s = <Item>[];
     for (var item in this) {
       s.add(item);
     }
@@ -101,11 +93,6 @@ class Queue<Item> implements Iterable<Item> {
 
   @override
   Iterable<R> cast<R>() {
-    throw UnimplementedError();
-  }
-
-  @override
-  bool contains(Object element) {
     throw UnimplementedError();
   }
 
@@ -148,7 +135,7 @@ class Queue<Item> implements Iterable<Item> {
 
   @override
   Iterable<T> map<T>(T Function(Item e) fn) {
-    final items= <T>[];
+    final items = <T>[];
 
     for (var item in this) {
       items.add(fn(item));
@@ -166,7 +153,8 @@ class Queue<Item> implements Iterable<Item> {
   Item get single => throw UnimplementedError();
 
   @override
-  Item singleWhere(bool Function(Item element) test, {Item Function() orElse}) {
+  Item singleWhere(bool Function(Item element) test,
+      {Item Function()? orElse}) {
     throw UnimplementedError();
   }
 
@@ -215,46 +203,52 @@ class Queue<Item> implements Iterable<Item> {
   int get length => n;
 
   @override
-  bool get isEmpty => firstNode == null;
+  bool get isEmpty => _firstNode == null;
 
   @override
-  bool get isNotEmpty => firstNode != null;
+  bool get isNotEmpty => _firstNode != null;
 
   @override
-  Item get first => firstNode.item;
+  Item get first => _firstNode!.item!;
 
   @override
-  Item firstWhere(bool Function(Item element) test, {Item Function() orElse}) {
+  Item firstWhere(bool Function(Item element) test, {Item Function()? orElse}) {
     throw UnimplementedError();
   }
 
   @override
-  Item get last => lastNode.item;
+  Item get last => _lastNode!.item!;
 
   @override
-  Item lastWhere(bool Function(Item element) test, {Item Function() orElse}) {
+  Item lastWhere(bool Function(Item element) test, {Item Function()? orElse}) {
     throw UnimplementedError();
   }
 
   @override
-  Iterator<Item> get iterator => LinkedIterator(firstNode);
+  Iterator<Item> get iterator => LinkedIterator(_firstNode!);
+
+  @override
+  bool contains(Object? element) {
+    throw UnimplementedError();
+  }
 }
 
 class Node<Item> {
   Item item;
-  Node<Item> next;
+  Node<Item>? next;
+  Node(this.item);
 }
 
 class LinkedIterator<Item> implements Iterator<Item> {
-  Node<Item> currentNode;
-  Item currentItem;
+  Node<Item>? _currentNode;
+  Item? _currentItem;
 
   LinkedIterator(Node<Item> firstNode) {
-    currentNode = firstNode;
+    _currentNode = firstNode;
   }
 
   bool hasNext() {
-    return currentNode != null;
+    return _currentNode != null;
   }
 
   void remove() {
@@ -264,13 +258,15 @@ class LinkedIterator<Item> implements Iterator<Item> {
   @override
   bool moveNext() {
     if (!hasNext()) return false;
-    currentItem = currentNode.item;
-    currentNode = currentNode.next;
-    return currentItem != null;
+
+    _currentItem = _currentNode!.item;
+    _currentNode = _currentNode!.next;
+
+    return _currentItem != null;
   }
 
   @override
-  Item get current => currentItem;
+  Item get current => _currentItem!;
 }
 
 /// Method to perform some tests of [Queue] data type it receive the command-line [arguments]

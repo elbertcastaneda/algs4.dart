@@ -5,7 +5,7 @@ import 'std_out.dart';
 
 class AVLTreeST<Key extends Comparable<Key>, Value> {
   /// The root node.
-  Node<Key, Value> root;
+  Node<Key, Value>? root;
 
   /// Checks if the symbol table is empty.
   /// Returns `true` if the symbol table is empty.
@@ -22,7 +22,7 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
   /// Returns the number of nodes in the subtree.
   /// @param x the subtree
   /// @return the number of nodes in the subtree
-  int _size(Node<Key, Value> x) {
+  int _size(Node<Key, Value>? x) {
     if (x == null) return 0;
     return x.size;
   }
@@ -41,7 +41,7 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
   /// @param x the subtree
   ///
   /// @return the height of the subtree.
-  int _height(Node<Key, Value> x) {
+  int _height(Node<Key, Value>? x) {
     if (x == null) return -1;
     return x.height;
   }
@@ -53,7 +53,7 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
   ///         symbol table and {@code null} if the key is not in the
   ///         symbol table
   /// @throws ArgumentError if {@code key} is {@code null}
-  Value get(Key key) {
+  Value? get(Key? key) {
     if (key == null) throw ArgumentError('argument to get() is null');
     var x = _get(root, key);
     if (x == null) return null;
@@ -67,7 +67,7 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
   /// @param key the key
   /// @return value associated with the given key in the subtree or
   ///         {@code null} if no such key
-  Node<Key, Value> _get(Node<Key, Value> x, Key key) {
+  Node<Key, Value>? _get(Node<Key, Value>? x, Key key) {
     if (x == null) return null;
     var cmp = key.compareTo(x.key);
     if (cmp < 0) {
@@ -97,7 +97,7 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
   /// @param key the key
   /// @param val the value
   /// @throws ArgumentError if {@code key} is {@code null}
-  void put(Key key, Value val) {
+  void put(Key? key, Value val) {
     if (key == null) throw ArgumentError('first argument to put() is null');
     if (val == null) {
       delete(key);
@@ -116,7 +116,7 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
   /// @param key the key
   /// @param val the value
   /// @return the subtree
-  Node<Key, Value> _put(Node<Key, Value> x, Key key, Value val) {
+  Node<Key, Value>? _put(Node<Key, Value>? x, Key key, Value val) {
     if (x == null) return Node(key, val, 0, 1);
     var cmp = key.compareTo(x.key);
     if (cmp < 0) {
@@ -136,8 +136,8 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
   ///
   /// @param x the subtree
   /// @return the subtree with restored AVL property
-  Node<Key, Value> balance(Node<Key, Value> x) {
-    if (_balanceFactor(x) < -1) {
+  Node<Key, Value>? balance(Node<Key, Value>? x) {
+    if (_balanceFactor(x!) < -1) {
       if (_balanceFactor(x.right) > 0) {
         x.right = _rotateRight(x.right);
       }
@@ -159,16 +159,16 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
   ///
   /// @param x the subtree
   /// @return the balance factor of the subtree
-  int _balanceFactor(Node<Key, Value> x) {
-    return _height(x.left) - _height(x.right);
+  int _balanceFactor(Node<Key, Value>? x) {
+    return _height(x!.left) - _height(x.right);
   }
 
   /// Rotates the given subtree to the right.
   ///
   /// @param x the subtree
   /// @return the right rotated subtree
-  Node<Key, Value> _rotateRight(Node<Key, Value> x) {
-    var y = x.left;
+  Node<Key, Value>? _rotateRight(Node<Key, Value>? x) {
+    var y = x!.left!;
     x.left = y.right;
     y.right = x;
     y.size = x.size;
@@ -182,8 +182,8 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
   ///
   /// @param x the subtree
   /// @return the left rotated subtree
-  Node<Key, Value> rotateLeft(Node<Key, Value> x) {
-    var y = x.right;
+  Node<Key, Value>? rotateLeft(Node<Key, Value>? x) {
+    var y = x!.right!;
     x.right = y.left;
     y.left = x;
     y.size = x.size;
@@ -198,7 +198,7 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
   ///
   /// @param key the key
   /// @throws IllegalArgumentException if {@code key} is {@code null}
-  void delete(Key key) {
+  void delete(Key? key) {
     if (key == null) throw ArgumentError('argument to delete() is null');
     if (!contains(key)) return;
     root = _delete(root, key);
@@ -211,8 +211,8 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
   /// @param x the subtree
   /// @param key the key
   /// @return the updated subtree
-  Node<Key, Value> _delete(Node<Key, Value> x, Key key) {
-    var cmp = key.compareTo(x.key);
+  Node<Key, Value>? _delete(Node<Key, Value>? x, Key key) {
+    var cmp = key.compareTo(x!.key);
     if (cmp < 0) {
       x.left = _delete(x.left, key);
     } else if (cmp > 0) {
@@ -224,7 +224,7 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
         return x.left;
       } else {
         var y = x;
-        x = _min(y.right);
+        x = _min(y.right)!;
         x.right = _deleteMin(y.right);
         x.left = y.left;
       }
@@ -249,8 +249,8 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
   ///
   /// @param x the subtree
   /// @return the updated subtree
-  Node<Key, Value> _deleteMin(Node<Key, Value> x) {
-    if (x.left == null) return x.right;
+  Node<Key, Value>? _deleteMin(Node<Key, Value>? x) {
+    if (x!.left == null) return x.right;
     x.left = _deleteMin(x.left);
     x.size = 1 + _size(x.left) + _size(x.right);
     x.height = 1 + math.max(_height(x.left), _height(x.right));
@@ -272,8 +272,8 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
   ///
   /// @param x the subtree
   /// @return the updated subtree
-  Node<Key, Value> _deleteMax(Node<Key, Value> x) {
-    if (x.right == null) return x.left;
+  Node<Key, Value>? _deleteMax(Node<Key, Value>? x) {
+    if (x!.right == null) return x.left;
     x.right = _deleteMax(x.right);
     x.size = 1 + _size(x.left) + _size(x.right);
     x.height = 1 + math.max(_height(x.left), _height(x.right));
@@ -286,15 +286,15 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
   /// @throws StateError if the symbol table is empty
   Key min() {
     if (isEmpty()) throw StateError('called min() with empty symbol table');
-    return _min(root).key;
+    return _min(root)!.key;
   }
 
   /// Returns the node with the smallest key in the subtree.
   ///
   /// @param x the subtree
   /// @return the node with the smallest key in the subtree
-  Node<Key, Value> _min(Node<Key, Value> x) {
-    if (x.left == null) return x;
+  Node<Key, Value>? _min(Node<Key, Value>? x) {
+    if (x!.left == null) return x;
     return _min(x.left);
   }
 
@@ -304,22 +304,22 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
   /// @throws StateError if the symbol table is empty
   Key max() {
     if (isEmpty()) throw StateError('called max() with empty symbol table');
-    return _max(root).key;
+    return _max(root)!.key;
   }
 
   /// Returns the node with the largest key in the subtree.
   ///
   /// @param x the subtree
   /// @return the node with the largest key in the subtree
-  Node<Key, Value> _max(Node<Key, Value> x) {
-    if (x.right == null) return x;
+  Node<Key, Value>? _max(Node<Key, Value>? x) {
+    if (x!.right == null) return x;
     return _max(x.right);
   }
 
   /// Returns the largest key in the symbol table less than or equal to [key].
   ///
   /// Throws `StateError` if the symbol table **is empty** or `ArgumentError` if [key] is `null`
-  Key floor(Key key) {
+  Key? floor(Key? key) {
     if (key == null) throw ArgumentError('argument to floor() is null');
     if (isEmpty()) {
       throw StateError('called floor() with empty symbol table');
@@ -339,7 +339,7 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
   /// @param key the key
   /// @return the node in the subtree with the largest key less than or equal
   ///         to the given key
-  Node<Key, Value> _floor(Node<Key, Value> x, Key key) {
+  Node<Key, Value>? _floor(Node<Key, Value>? x, Key key) {
     if (x == null) return null;
     var cmp = key.compareTo(x.key);
     if (cmp == 0) return x;
@@ -359,10 +359,10 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
   /// @return the smallest key in the symbol table greater than or equal to
   ///         {@code key}
   /// Throws `StateError` if the symbol table **is empty** or `ArgumentError` if [key] is `null`
-  Key ceiling(Key key) {
+  Key? ceiling(Key? key) {
     if (key == null) ArgumentError('argument to ceiling() is null');
     if (isEmpty()) StateError('called ceiling() with empty symbol table');
-    var x = _ceiling(root, key);
+    var x = _ceiling(root, key!);
     if (x == null) {
       return null;
     } else {
@@ -377,7 +377,7 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
   /// @param key the key
   /// @return the node in the subtree with the smallest key greater than or
   ///         equal to the given key
-  Node<Key, Value> _ceiling(Node<Key, Value> x, Key key) {
+  Node<Key, Value>? _ceiling(Node<Key, Value>? x, Key key) {
     if (x == null) return null;
     var cmp = key.compareTo(x.key);
     if (cmp == 0) return x;
@@ -400,7 +400,7 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
     if (k < 0 || k >= size()) {
       throw ArgumentError('k is not in range 0-' + (size() - 1).toString());
     }
-    var x = _select(root, k);
+    var x = _select(root, k)!;
     return x.key;
   }
 
@@ -409,7 +409,7 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
   /// @param x the subtree
   /// @param k the kth smallest key in the subtree
   /// @return the node with key the kth smallest key in the subtree
-  Node<Key, Value> _select(Node<Key, Value> x, int k) {
+  Node<Key, Value>? _select(Node<Key, Value>? x, int k) {
     if (x == null) return null;
     var t = _size(x.left);
     if (t > k) {
@@ -423,13 +423,13 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
 
   /// Returns the number of keys in the symbol table strictly less than [key].
   /// Throws ArgumentError if [key] is `null`
-  int rank(Key key) {
+  int rank(Key? key) {
     if (key == null) throw ArgumentError('argument to rank() is null');
     return _rank(key, root);
   }
 
   /// Returns the number of keys in the [subtree] less than [key].
-  int _rank(Key key, Node<Key, Value> subtree) {
+  int _rank(Key key, Node<Key, Value>? subtree) {
     if (subtree == null) return 0;
     var cmp = key.compareTo(subtree.key);
     if (cmp < 0) {
@@ -459,7 +459,7 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
   ///
   /// @param x the subtree
   /// @param queue the queue
-  void _keysInOrder(Node<Key, Value> x, Queue<Key> queue) {
+  void _keysInOrder(Node<Key, Value>? x, Queue<Key> queue) {
     if (x == null) return;
     _keysInOrder(x.left, queue);
     queue.enqueue(x.key);
@@ -472,10 +472,10 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
   Iterable<Key> keysLevelOrder() {
     var queue = Queue<Key>();
     if (!isEmpty()) {
-      var queue2 = Queue<Node<Key, Value>>();
+      var queue2 = Queue<Node<Key, Value>?>();
       queue2.enqueue(root);
       while (queue2.isNotEmpty) {
-        var x = queue2.dequeue();
+        var x = queue2.dequeue()!;
         queue.enqueue(x.key);
         if (x.left != null) {
           queue2.enqueue(x.left);
@@ -496,7 +496,7 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
   ///         and {@code hi} (exclusive)
   /// @throws ArgumentError if either {@code lo} or {@code hi}
   ///             is {@code null}
-  Iterable<Key> keysByRange(Key lo, Key hi) {
+  Iterable<Key> keysByRange(Key? lo, Key? hi) {
     if (lo == null) throw ArgumentError('first argument to keys() is null');
     if (hi == null) throw ArgumentError('second argument to keys() is null');
     var queue = Queue<Key>();
@@ -505,7 +505,7 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
   }
 
   /// Adds the keys between [lo] and [hi] in the subtree to the `queue`.
-  void _keysByRange(Node<Key, Value> x, Queue<Key> queue, Key lo, Key hi) {
+  void _keysByRange(Node<Key, Value>? x, Queue<Key> queue, Key lo, Key hi) {
     if (x == null) return;
     var cmplo = lo.compareTo(x.key);
     var cmphi = hi.compareTo(x.key);
@@ -518,7 +518,7 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
   /// between [lo] (minimum endpoint) and [hi] (maximum endpoint).
   ///
   /// Throws ArgumentError if either [lo] or [hi] is `null`
-  int sizeByKeys(Key lo, Key hi) {
+  int sizeByKeys(Key? lo, Key? hi) {
     if (lo == null) throw ArgumentError('first argument to size() is null');
     if (hi == null) throw ArgumentError('second argument to size() is null');
     if (lo.compareTo(hi) > 0) return 0;
@@ -544,7 +544,7 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
   }
 
   /// Returns `true` if AVL property is consistent in the [subtree]
-  bool _isAVL(Node<Key, Value> subtree) {
+  bool _isAVL(Node<Key, Value>? subtree) {
     if (subtree == null) return true;
     var bf = _balanceFactor(subtree);
     if (bf > 1 || bf < -1) return false;
@@ -561,7 +561,7 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
   /// empty constraint (Credit: **Bob Dondero's** elegant solution).
   ///
   /// Returns `true` if the symmetric order is consistent
-  bool _isBST(Node<Key, Value> x, Key min, Key max) {
+  bool _isBST(Node<Key, Value>? x, Key? min, Key? max) {
     if (x == null) return true;
     if (min != null && x.key.compareTo(min) <= 0) return false;
     if (max != null && x.key.compareTo(max) >= 0) return false;
@@ -572,13 +572,13 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
   ///
   /// Returns `true` if size is consistent
   bool isSizeConsistent() {
-    return _isSizeConsistent(root);
+    return _isSizeConsistent(root!);
   }
 
   /// Checks if the size of the subtree is consistent.
   ///
   /// Returns `true` if the size of the subtree is consistent
-  bool _isSizeConsistent(Node x) {
+  bool _isSizeConsistent(Node<Key, Value>? x) {
     if (x == null) return true;
     if (x.size != _size(x.left) + _size(x.right) + 1) return false;
     return _isSizeConsistent(x.left) && _isSizeConsistent(x.right);
@@ -602,14 +602,12 @@ class AVLTreeST<Key extends Comparable<Key>, Value> {
 class Node<Key, Value> {
   Key key; // the key
   Value val; // the associated value
-  int height; // height of the subtree
-  int size; // number of nodes in subtree
-  Node<Key, Value> left; // left subtree
-  Node<Key, Value> right; // right subtree
+  int height = 0; // height of the subtree
+  int size = 0; // number of nodes in subtree
+  Node<Key, Value>? left; // left subtree
+  Node<Key, Value>? right; // right subtree
 
-  Node(Key key, Value val, int height, int size) {
-    this.key = key;
-    this.val = val;
+  Node(this.key, this.val, int height, int size) {
     this.size = size;
     this.height = height;
   }
@@ -625,7 +623,7 @@ void main(List<String> arguments) {
   });
 
   for (var s in st.keys()) {
-    stdOut.println('${s} a');
+    stdOut.println('tree.keys() ==> ${s}');
   }
   stdOut.println('');
 }
